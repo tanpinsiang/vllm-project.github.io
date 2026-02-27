@@ -2,7 +2,7 @@
 layout: post
 title: "Beyond Porting: How vLLM Orchestrates High-Performance Inference on AMD ROCm"
 author: "AMD and Embedded LLM"
-image: /assets/figures/2026-02-20-rocm-attention-backend/ROCm-Attention-rocm_aiter_fa.png
+image: /assets/figures/2026-02-28-rocm-attention-backend/ROCm-Attention-rocm_aiter_fa.png
 math: true
 tags:
   - performance
@@ -33,7 +33,7 @@ These request types arrive randomly and are batched together for efficiency.
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/continuous-batching.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/continuous-batching.png"
     width="100%"
     alt="Continuous batching diagram" />
   <figcaption>Online serving with 5 concurrent requests. Step 4 shows prefill, extend, and decode tokens batched together.</figcaption>
@@ -53,7 +53,7 @@ Before diving into `ROCM_AITER_FA`, let's understand the other MHA backends avai
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/ROCm-Attention-unified-attn.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/ROCm-Attention-unified-attn.png"
     style="width: 60%; display: block; margin: 0 auto;"
     alt="Unified attention kernel flow diagram" />
   <figcaption>Unified attention processes all tokens through one kernel.</figcaption>
@@ -95,7 +95,7 @@ This backend has two important characteristics:
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/ROCm-Attention-rocm_aiter_fa.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/ROCm-Attention-rocm_aiter_fa.png"
     style="width: 60%; display: block; margin: 0 auto;"
     alt="Flowchart diagram of ROCM_AITER_FA architecture" />
   <figcaption>ROCM_AITER_FA routes tokens to three specialized paths</figcaption>
@@ -110,7 +110,7 @@ This backend has two important characteristics:
     - **Decode Path**: Single token generation uses AITER highly optimized kernel for memory bandwidth
 
     <figure style="text-align: center;">
-    <iframe src="/assets/figures/2026-02-20-rocm-attention-backend/iteration2_attention_backend_routing.html" width="600" height="420" style="border: 1px solid #dee2e6; border-radius: 8px;" frameborder="0"></iframe>
+    <iframe src="/assets/figures/2026-02-28-rocm-attention-backend/iteration2_attention_backend_routing.html" width="600" height="420" style="border: 1px solid #dee2e6; border-radius: 8px;" frameborder="0"></iframe>
     <figcaption>Animation: R1 (decode token) routes to Decode Path, R2 (prefill tokens) routes to Prefill Path.</figcaption>
     </figure>
 
@@ -118,14 +118,14 @@ This backend has two important characteristics:
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/batch_reordering.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/batch_reordering.png"
     style="width: 80%; display: block; margin: 0 auto;"
     alt="Diagram showing batch reordering optimization" />
   <figcaption>Batch reordering ensures each kernel path operates on contiguous tokens, eliminating redundant KV cache fetches.</figcaption>
 </figure>
 
 <figure style="text-align: center;">
-<iframe src="/assets/figures/2026-02-20-rocm-attention-backend/iteration4_batch_reordering_extend.html" width="600" height="670" style="border: 1px solid #dee2e6; border-radius: 8px;" frameborder="0"></iframe>
+<iframe src="/assets/figures/2026-02-28-rocm-attention-backend/iteration4_batch_reordering_extend.html" width="600" height="670" style="border: 1px solid #dee2e6; border-radius: 8px;" frameborder="0"></iframe>
 <figcaption>Animation: Batch reordering reorders requests to [decode > extend > prefill], then routes R3 to Extend Path.</figcaption>
 </figure>
 
@@ -133,7 +133,7 @@ This backend has two important characteristics:
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/chunked_context_flow.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/chunked_context_flow.png"
     style="width: 80%; display: block; margin: 0 auto;"
     alt="Diagram showing chunked context processing workflow" />
   <figcaption>100K+ token contexts are processed in 32K chunks with LSE-based merging for numerical stability.</figcaption>
@@ -192,7 +192,7 @@ The following animation demonstrates how multiple requests flow through the ROCM
 
 <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; overflow-x: auto; padding: 20px 0;">
 <div style="display: flex; justify-content: center; min-width: 1420px;">
-<iframe src="/assets/figures/2026-02-20-rocm-attention-backend/rocm_aiter_fa_flow_animated_new.html" width="1400" height="850" style="border: 1px solid #dee2e6; border-radius: 12px;" frameborder="0"></iframe>
+<iframe src="/assets/figures/2026-02-28-rocm-attention-backend/rocm_aiter_fa_flow_animated_new.html" width="1400" height="850" style="border: 1px solid #dee2e6; border-radius: 12px;" frameborder="0"></iframe>
 </div>
 </div>
 
@@ -331,7 +331,7 @@ vllm serve $model_path \
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mha_tpot_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mha_tpot_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MHA TPOT Comparison" />
   <figcaption>ROCM_AITER_FA delivers 2.8-4.6x faster TPOT compared to legacy ROCM_ATTN across MI300X/MI325X/MI355X.</figcaption>
@@ -339,7 +339,7 @@ vllm serve $model_path \
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mha_ttft_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mha_ttft_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MHA TTFT Comparison" />
   <figcaption>TTFT (Time To First Token) comparison shows ROCM_AITER_FA and ROCM_AITER_UNIFIED lead in prefill performance at 64 and 128 concurrency levels.</figcaption>
@@ -347,7 +347,7 @@ vllm serve $model_path \
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mha_tps_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mha_tps_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MHA TPS Comparison" />
   <figcaption>Output throughput (TPS) mirrors TPOT results—ROCM_AITER_FA achieves 2.7-4.4x higher throughput than legacy ROCM_ATTN.</figcaption>
@@ -379,7 +379,7 @@ _Note: ROCM_ATTN shows 2.7-4.4x slower TPS because Qwen3-235B has unsupported KV
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mla_tpot_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mla_tpot_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MLA TPOT Comparison" />
   <figcaption>AITER MLA backends deliver 1.2-1.6x faster TPOT compared to TRITON_MLA across MI300X/MI325X/MI355X, thanks to the shared assembly decode kernel.</figcaption>
@@ -387,7 +387,7 @@ _Note: ROCM_ATTN shows 2.7-4.4x slower TPS because Qwen3-235B has unsupported KV
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mla_ttft_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mla_ttft_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MLA TTFT Comparison" />
   <figcaption>TTFT comparison shows ROCM_AITER_MLA achieves the best TTFT on MI355X at 128 concurrency.</figcaption>
@@ -395,7 +395,7 @@ _Note: ROCM_ATTN shows 2.7-4.4x slower TPS because Qwen3-235B has unsupported KV
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/mla_tps_comparison.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/mla_tps_comparison.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="MLA TPS Comparison" />
   <figcaption>Output throughput (TPS) shows AITER MLA backends achieving up to 1.5x higher throughput than TRITON_MLA.</figcaption>
@@ -429,7 +429,7 @@ The performance gains don't come from a single optimization—they emerge from h
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/system_stack.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/system_stack.png"
     style="width: 80%; display: block; margin: 0 auto;"
     alt="System architecture stack diagram" />
   <figcaption>The complete system stack: from user request through vLLM orchestration to AITER primitives on AMD hardware.</figcaption>
@@ -441,7 +441,7 @@ Where does the performance come from? Both layers working together:
 
 <figure style="text-align: center;">
   <img
-    src="/assets/figures/2026-02-20-rocm-attention-backend/innovation_attribution.png"
+    src="/assets/figures/2026-02-28-rocm-attention-backend/innovation_attribution.png"
     style="width: 100%; display: block; margin: 0 auto;"
     alt="Innovation Attribution" />
   <figcaption>vLLM orchestration handles routing and chunking; AITER provides hardware-optimized primitives.</figcaption>
